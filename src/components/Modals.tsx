@@ -6,7 +6,7 @@ import { makeStyles, Theme } from "@material-ui/core/styles";
 import { useEffect } from "react";
 
 function Alert(props: AlertProps) {
-  return <MuiAlert elevation={3} variant="filled" {...props} />;
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({

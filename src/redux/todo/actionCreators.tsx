@@ -1,7 +1,7 @@
 import { Dispatch } from "react";
 import { actionTypes } from "./actionTypes";
 
-export const addTodo = (data: string) => {
+export const addTodo = (data: IPayload[] = []) => {
   return (dispatch: Dispatch<IActionType>) => {
     dispatch({
       type: actionTypes.TODOS_ADD,

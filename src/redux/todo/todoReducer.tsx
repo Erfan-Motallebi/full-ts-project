@@ -10,15 +10,15 @@ const todoReducer = (
 ): IState => {
   switch (action.type) {
     case actionTypes.TODOS_ADD:
-      const todoList: IPayload[] = [
-        {
-          id: new Date().getTime().toString(),
-          body: action.payload,
-        },
-      ];
+      // const todoList: IPayload[] = [
+      //   {
+      //     id: new Date().getTime().toString(),
+      //     body: action.payload,
+      //   },
+      // ];
       return {
         ...state,
-        todoList: state.todoList.concat(todoList),
+        todoList: action.payload as IPayload[],
       };
     case actionTypes.TODOS_REMOVE:
       const newTodoList: IPayload[] = state.todoList.filter(

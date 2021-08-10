@@ -1,11 +1,11 @@
 interface IPayload {
     id: string,
-    body: string | undefined
+    body?: string
 }
 
 interface IActionType {
     type: string,
-    payload?: string
+    payload?: IPayload[] | string
 }
 
 interface IState {

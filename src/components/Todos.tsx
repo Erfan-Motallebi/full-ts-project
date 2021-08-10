@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 import { actionCreators } from "../redux";
@@ -27,6 +27,7 @@ import Slide from "@material-ui/core/Slide";
 import Badge from "@material-ui/core/Badge";
 import WorkIcon from "@material-ui/icons/Work";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import Edit from "@material-ui/icons/Edit";
 
 const Wrapper = styled.div`
   max-width: 1400px;
@@ -53,6 +54,8 @@ const StyledButton = styled(Button)`
 const StyledBadge = styled(Badge)`
   font-size: 3rem;
   margin-right: 20px;
+  position: absolute !important;
+  right: 0 !important;
 `;
 
 const Transition = React.forwardRef(function Transition(
@@ -83,7 +86,13 @@ function Todos(): JSX.Element {
       inputValue: "",
       condition: true,
     });
-    addTodo(value.inputValue);
+    addTodo([
+      ...todoList,
+      {
+        id: new Date().getTime().toLocaleString(),
+        body: value.inputValue,
+      },
+    ]);
   };
 
   const closeModal = () => {
@@ -105,9 +114,16 @@ function Todos(): JSX.Element {
     });
   };
 
-  // useEffect(() => {
-  //   localStorage.setItem("lists", JSON.stringify(todoList));
-  // });
+  useEffect(() => {
+    localStorage.setItem("lists", JSON.stringify(todoList));
+    if (todoList.length === 0) {
+      setValue({
+        ...value,
+        condition: false,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [todoList]);
   return (
     <React.Fragment>
       <Wrapper>
@@ -149,8 +165,8 @@ function Todos(): JSX.Element {
             Add
           </StyledButton>
         </StyledForm>
-        <Container>
-          {value.condition && (
+        {value.condition && (
+          <Container>
             <List
               style={{
                 backgroundColor: "#DAD5AB",
@@ -176,32 +192,25 @@ function Todos(): JSX.Element {
                           removeTodo(list.id as string);
                           setValue({
                             ...value,
-                            condition: false,
                             modal: {
                               content: "Removed",
                               state: true,
                             },
                           });
                         }}
-                        onMouseOver={() => {
-                          setValue({
-                            ...value,
-                            modal: {
-                              content: "",
-                              state: false,
-                            },
-                          });
-                        }}
                       >
                         <DeleteIcon />
+                      </Button>
+                      <Button>
+                        <Edit />
                       </Button>
                     </ListItemSecondaryAction>
                   </ListItem>
                 );
               })}
             </List>
-          )}
-        </Container>
+          </Container>
+        )}
       </Wrapper>
       <Dialog
         open={value.open}
