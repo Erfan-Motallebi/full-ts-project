@@ -21,7 +21,6 @@ const todoReducer = (
         todoList: state.todoList.concat(todoList),
       };
     case actionTypes.TODOS_REMOVE:
-      console.log(action.payload);
       const newTodoList: IPayload[] = state.todoList.filter(
         (list: IPayload) => list.id !== action.payload
       );

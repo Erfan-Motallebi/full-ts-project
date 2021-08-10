@@ -17,5 +17,13 @@ type DispatchType = (args: IActionType) => IActionType
 type TodoStateType = {
     inputValue: string;
     condition: boolean;
-    // todoLists: IPayload[]
+    modal: {
+        content: string,
+        state: boolean
+    },
+    open: boolean
+  }
+
+  interface IContext {
+      handleClick: () => void
   }
