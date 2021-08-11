@@ -50,7 +50,7 @@ const Modals: React.FC<Props> = ({ modalContent }) => {
 
   return (
     <Container className={classes.root}>
-      <Snackbar open={modalOpen} autoHideDuration={6000} onClose={handleClose}>
+      <Snackbar open={modalOpen} autoHideDuration={1500} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success">
           {modalContent}
         </Alert>

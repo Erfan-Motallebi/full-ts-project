@@ -1,29 +1,28 @@
 interface IPayload {
-    id: string,
-    body?: string
+  id: string;
+  body?: string;
 }
 
 interface IActionType {
-    type: string,
-    payload?: IPayload[] | string
+  type: string;
+  payload?: IPayload[] | string;
 }
 
 interface IState {
-    todoList: IPayload[]
+  todoList: IPayload[];
 }
 
-type DispatchType = (args: IActionType) => IActionType
+type DispatchType = (args: IActionType) => IActionType;
 
 type TodoStateType = {
-    inputValue: string;
-    condition: boolean;
-    modal: {
-        content: string,
-        state: boolean
-    },
-    open: boolean
-  }
+  inputValue: string;
+  condition: boolean;
+  modalContent: string;
+  open: boolean;
+  id: string;
+  label: string;
+};
 
-  interface IContext {
-      handleClick: () => void
-  }
+interface IContext {
+  handleClick: () => void;
+}

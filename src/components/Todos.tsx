@@ -54,8 +54,6 @@ const StyledButton = styled(Button)`
 const StyledBadge = styled(Badge)`
   font-size: 3rem;
   margin-right: 20px;
-  position: absolute !important;
-  right: 0 !important;
 `;
 
 const Transition = React.forwardRef(function Transition(
@@ -69,30 +67,49 @@ function Todos(): JSX.Element {
   const [value, setValue] = useState<TodoStateType>({
     inputValue: "",
     condition: false,
-    modal: {
-      content: "",
-      state: false,
-    },
+    modalContent: "",
     open: false,
+    id: "",
+    label: "Add",
   });
 
+  const { todoList } = useSelector((state: RState) => state.todo);
+  const dispatch = useDispatch();
+  const { addTodo, removeTodo } = bindActionCreators(actionCreators, dispatch);
+
   const agree = () => {
-    setValue({
-      open: false,
-      modal: {
-        content: "Added",
-        state: true,
-      },
-      inputValue: "",
-      condition: true,
-    });
-    addTodo([
-      ...todoList,
-      {
-        id: new Date().getTime().toLocaleString(),
-        body: value.inputValue,
-      },
-    ]);
+    if (value.label === "Edit") {
+      const newTodoList: IPayload[] = todoList.map((todo) => {
+        if (todo.id === value.id) {
+          todo.body = value.inputValue;
+        }
+        return todo;
+      });
+      addTodo(newTodoList);
+      setValue({
+        ...value,
+        open: false,
+        modalContent: "Added",
+        inputValue: "",
+        label: "Add",
+        condition: true,
+      });
+    } else {
+      addTodo([
+        ...todoList,
+        {
+          id: new Date().getTime().toLocaleString(),
+          body: value.inputValue,
+        },
+      ]);
+      setValue({
+        ...value,
+        open: false,
+        modalContent: "Added",
+        inputValue: "",
+        condition: true,
+      });
+    }
   };
 
   const closeModal = () => {
@@ -102,28 +119,35 @@ function Todos(): JSX.Element {
     });
   };
 
-  const { todoList } = useSelector((state: RState) => state.todo);
-  const dispatch = useDispatch();
-  const { addTodo, removeTodo } = bindActionCreators(actionCreators, dispatch);
+  const editList = (todoId: string) => {
+    const editField: IPayload | undefined = todoList.find(
+      (todo: IPayload) => todo.id === todoId
+    );
+    setValue({
+      ...value,
+      id: todoId,
+      label: "Edit",
+      inputValue: editField?.body as string,
+    });
+  };
+
+  const removeList = (todoId: string) => {
+    removeTodo(todoId);
+    setValue({
+      ...value,
+      modalContent: "Removed",
+    });
+  };
 
   const onSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     setValue({
       ...value,
       open: true,
     });
   };
 
-  useEffect(() => {
-    localStorage.setItem("lists", JSON.stringify(todoList));
-    if (todoList.length === 0) {
-      setValue({
-        ...value,
-        condition: false,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [todoList]);
   return (
     <React.Fragment>
       <Wrapper>
@@ -152,20 +176,19 @@ function Todos(): JSX.Element {
               setValue({
                 ...value,
                 inputValue: e.target.value,
-                modal: { content: "", state: false },
               })
             }
           />
           <StyledButton
             variant="contained"
-            color="secondary"
+            color="primary"
             startIcon={<Add />}
             type="submit"
           >
-            Add
+            {value.label}
           </StyledButton>
         </StyledForm>
-        {value.condition && (
+        {todoList.length > 0 ? (
           <Container>
             <List
               style={{
@@ -187,21 +210,10 @@ function Todos(): JSX.Element {
                     </ListItemAvatar>
                     <ListItemText primary={list.body} />
                     <ListItemSecondaryAction>
-                      <Button
-                        onClick={() => {
-                          removeTodo(list.id as string);
-                          setValue({
-                            ...value,
-                            modal: {
-                              content: "Removed",
-                              state: true,
-                            },
-                          });
-                        }}
-                      >
+                      <Button onClick={() => removeList(list.id as string)}>
                         <DeleteIcon />
                       </Button>
-                      <Button>
+                      <Button onClick={() => editList(list.id as string)}>
                         <Edit />
                       </Button>
                     </ListItemSecondaryAction>
@@ -210,6 +222,8 @@ function Todos(): JSX.Element {
               })}
             </List>
           </Container>
+        ) : (
+          ""
         )}
       </Wrapper>
       <Dialog
@@ -238,7 +252,7 @@ function Todos(): JSX.Element {
         </DialogActions>
       </Dialog>
 
-      {value.modal.state && <Modals modalContent={value.modal.content} />}
+      {todoList.length !== 0 && <Modals modalContent={value.modalContent} />}
     </React.Fragment>
   );
 }
